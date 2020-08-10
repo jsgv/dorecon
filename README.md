@@ -34,6 +34,7 @@ SSH_KEYS=123123 ./dorecon.sh domain.com
 * Create and attach an [SSH key](https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/) to your account (in order to connect to VPS later)
 * Create an [API token](https://www.digitalocean.com/docs/apis-clis/doctl/how-to/install/#step-2-create-an-api-token)
 * Install and configure [doctl](https://github.com/digitalocean/doctl) using the created API token
+* Set the correct SSH key in the doctl [configuration file](https://github.com/digitalocean/doctl#configuring-default-values), this will allow you to SSH to the VPS
 
 ### Configuration:
 
@@ -41,7 +42,6 @@ SSH_KEYS=123123 ./dorecon.sh domain.com
 
 | Name | Description | Example |
 |------|-------------|---------|
-| SSH_KEYS | SSH key to associate with the droplet (required) (`doctl compute ssh-key list` to view available) | SSH_KEYS=123123 |
 | REGION | Region in which to create droplet (optional, default = `sfo2`) `doctl compute region list` to view available) | REGION=nyc3 |
 | SIZE | Size of the droplet (optional, default = `s-1vcpu-2gb`) `doctl compute size list` to view available options) | SIZE=s-3vcpu-1gb |
 
@@ -54,7 +54,7 @@ The initial recon consists of:
 
 ### Reports:
 
-Reports are written to `/root/recon/reports/$TIMESTAMP`.
+Reports are written to `/root/recon/reports/$TIMESTAMP/$DOMAIN`.
 
 You can view the status of the script with `tail -f /var/log/cloud-init-output.log`.
 

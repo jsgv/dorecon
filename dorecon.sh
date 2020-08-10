@@ -11,18 +11,27 @@ EOF
 
 banner;
 
-SSH_KEYS=${SSH_KEYS:-0}
 REGION=${REGION:-sfo2}
 SIZE=${SIZE:-s-1vcpu-2gb}
 
+DOMAINS=""
+
+for d in "$@"
+do
+    DOMAINS+="\"$d\" ";
+done
+
+# remove trailing space after last domain
+DOMAINS=`echo $DOMAINS | sed -e "s/ $//"`
+
 # replace domain placeholder
-USER_DATA=$(sed -e "s/example.com/$1/" vps-init.sh);
+USER_DATA=$(sed -e "s/DOMAINSPLACEHOLDER/$DOMAINS/" vps-init.sh);
 
 doctl compute droplet create \
     --image ubuntu-18-04-x64 \
     --size $SIZE \
     --region $REGION \
-    --ssh-keys $SSH_KEYS \
     --user-data "$USER_DATA" \
-    "recon-$1"; 
+    --wait \
+    "recon"; 
 
