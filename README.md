@@ -15,7 +15,7 @@ Example script (`vps-init.sh`) installs popular recon tools and runs a basic rec
 ### Usage:
 
 ```sh
-SSH_KEYS=123123 ./dorecon.sh domain.com
+./dorecon.sh domain1.com domain2.com domain3.com
 ```
 
 ### Tools installed:
