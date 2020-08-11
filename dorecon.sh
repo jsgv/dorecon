@@ -21,17 +21,26 @@ do
     DOMAINS+="\"$d\" ";
 done
 
+INIT_SCRIPT=$(cat vps-init.sh);
+
 # remove trailing space after last domain
 DOMAINS=`echo $DOMAINS | sed -e "s/ $//"`
 
 # replace domain placeholder
-USER_DATA=$(sed -e "s/DOMAINSPLACEHOLDER/$DOMAINS/" vps-init.sh);
+INIT_SCRIPT=$(echo "$INIT_SCRIPT" | sed -e "s/DOMAINSPLACEHOLDER/$DOMAINS/");
+
+# if Telegram variables are defined, add the API call to the end of the script
+if [[ $TELEGRAM_BOT_ID && $TELEGRAM_CHAT_ID ]]
+then
+    INIT_SCRIPT+="
+curl -s -o /dev/null 'https://api.telegram.org/bot$TELEGRAM_BOT_ID/sendMessage?text=Recon+complete&chat_id=$TELEGRAM_CHAT_ID';"
+fi
 
 doctl compute droplet create \
     --image ubuntu-18-04-x64 \
     --size $SIZE \
     --region $REGION \
-    --user-data "$USER_DATA" \
+    --user-data "$INIT_SCRIPT" \
     --wait \
     "recon"; 
 

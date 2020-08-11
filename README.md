@@ -9,13 +9,12 @@
 
 # DO Recon
 
-Automated recon script that spins up a DigitalOcean VPS and sets the `user-data` option to a recon script for a specific domain. 
-Example script (`vps-init.sh`) installs popular recon tools and runs a basic recon assessment with subfinder, Amass and nuclei.
+Automated recon script that spins up a DigitalOcean VPS and sets the `user-data` option to a recon script for a specific domain(s). Initializing script (`vps-init.sh`) installs popular recon tools and runs a basic recon assessment with subfinder, Amass and nuclei. Supports notification on completion by Telegram.
 
 ### Usage:
 
 ```sh
-./dorecon.sh domain1.com domain2.com domain3.com
+TELEGRAM_BOT_ID=123 TELEGRAM_CHAT_ID=asdf ./dorecon.sh domain1.com domain2.com domain3.com
 ```
 
 ### Tools installed:
@@ -35,6 +34,7 @@ Example script (`vps-init.sh`) installs popular recon tools and runs a basic rec
 * Create an [API token](https://www.digitalocean.com/docs/apis-clis/doctl/how-to/install/#step-2-create-an-api-token)
 * Install and configure [doctl](https://github.com/digitalocean/doctl) using the created API token
 * Set the correct SSH key in the doctl [configuration file](https://github.com/digitalocean/doctl#configuring-default-values), this will allow you to SSH to the VPS
+* Optional: Telegram message sent upon recon completion
 
 ### Configuration:
 
@@ -44,6 +44,8 @@ Example script (`vps-init.sh`) installs popular recon tools and runs a basic rec
 |------|-------------|---------|
 | REGION | Region in which to create droplet (optional, default = `sfo2`) `doctl compute region list` to view available) | REGION=nyc3 |
 | SIZE | Size of the droplet (optional, default = `s-1vcpu-2gb`) `doctl compute size list` to view available options) | SIZE=s-3vcpu-1gb |
+| TELEGRAM_BOT_ID | Telegram bot id (optional) | TELEGRAM_BOT_ID=123123:asdfasdfasdf |
+| TELEGRAM_CHAT_ID | Telegram chat id (optional) | TELEGRAM_CHAT_ID=123123 |
 
 ### Initial recon:
 
@@ -61,5 +63,4 @@ You can view the status of the script with `tail -f /var/log/cloud-init-output.l
 ### After:
 
 Since the rest of the tools are installed on the VPS using them is as simple as just SSH'ing to the droplet.
-
 

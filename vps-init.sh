@@ -48,14 +48,13 @@ do
     mkdir -p "$OUT_FOLDER";
 
     subfinder -d $domain -o "$OUT_FOLDER/subfinder.txt";
+    sort -u -o "$OUT_FOLDER/subfinder.txt" "$OUT_FOLDER/subfinder.txt"
 
-    amass enum -d $domain -o "$OUT_FOLDER/amass.txt";
-
-    amass enum -brute -d $domain -o "$OUT_FOLDER/amass-brute.txt";
+    amass enum -brute -d $domain -o "$OUT_FOLDER/amass.txt";
+    sort -u -o "$OUT_FOLDER/amass.txt" "$OUT_FOLDER/amass.txt"
 
     cat "$OUT_FOLDER/subfinder.txt" \
-            "$OUT_FOLDER/amass.txt" \
-            "$OUT_FOLDER/amass-brute.txt" | \
+            "$OUT_FOLDER/amass.txt" | \
         sort -u | \
         httpx -silent | \
         nuclei -silent \
@@ -66,5 +65,5 @@ do
             -t technologies/ -t tokens/ -t vulnerabilities/ -t workflows/
 done
 
-# TODO: add notification
 echo "All done!";
+
