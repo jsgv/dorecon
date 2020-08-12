@@ -1,6 +1,8 @@
 #!/bin/bash
 
-DOMAINS=(DOMAINSPLACEHOLDER);
+DOMAINS=(PLACEHOLDER_DOMAINS);
+DORECON=0;
+
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S");
 REPORTS_FOLDER="/root/recon/reports/$TIMESTAMP";
 GOLANG_DL="go1.14.6.linux-amd64.tar.gz";
@@ -47,22 +49,25 @@ do
     OUT_FOLDER="$REPORTS_FOLDER/$domain"
     mkdir -p "$OUT_FOLDER";
 
-    subfinder -d $domain -o "$OUT_FOLDER/subfinder.txt";
-    sort -u -o "$OUT_FOLDER/subfinder.txt" "$OUT_FOLDER/subfinder.txt"
+    if [[ "$DORECON" -eq 1 ]];
+    then
+        subfinder -d $domain -o "$OUT_FOLDER/subfinder.txt";
+        sort -u -o "$OUT_FOLDER/subfinder.txt" "$OUT_FOLDER/subfinder.txt"
 
-    amass enum -brute -d $domain -o "$OUT_FOLDER/amass.txt";
-    sort -u -o "$OUT_FOLDER/amass.txt" "$OUT_FOLDER/amass.txt"
+        amass enum -brute -d $domain -o "$OUT_FOLDER/amass.txt";
+        sort -u -o "$OUT_FOLDER/amass.txt" "$OUT_FOLDER/amass.txt"
 
-    cat "$OUT_FOLDER/subfinder.txt" \
-            "$OUT_FOLDER/amass.txt" | \
-        sort -u | \
-        httpx -silent | \
-        nuclei -silent \
-            -c 100 -retries 3 -pbar \
-            -o "$OUT_FOLDER/nuclei.txt" \
-            -t basic-detections/ -t cves/ -t dns/ -t files/ -t panels/ \
-            -t security-misconfiguration -t subdomain-takeover \
-            -t technologies/ -t tokens/ -t vulnerabilities/ -t workflows/
+        cat "$OUT_FOLDER/subfinder.txt" \
+                "$OUT_FOLDER/amass.txt" | \
+            sort -u | \
+            httpx -silent | \
+            nuclei -silent \
+                -c 100 -retries 3 -pbar \
+                -o "$OUT_FOLDER/nuclei.txt" \
+                -t basic-detections/ -t cves/ -t dns/ -t files/ -t panels/ \
+                -t security-misconfiguration -t subdomain-takeover \
+                -t technologies/ -t tokens/ -t vulnerabilities/ -t workflows/ ;
+    fi
 done
 
 echo "All done!";

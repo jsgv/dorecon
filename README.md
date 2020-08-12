@@ -1,20 +1,20 @@
 ```
-    ____  ____     ____                      
-   / __ \/ __ \   / __ \___  _________  ____ 
-  / / / / / / /  / /_/ / _ \/ ___/ __ \/ __ \
+    ____           ____
+   / __ \____     / __ \___  _________  ____
+  / / / / __ \   / /_/ / _ \/ ___/ __ \/ __ \
  / /_/ / /_/ /  / _, _/  __/ /__/ /_/ / / / /
-/_____/\____/  /_/ |_|\___/\___/\____/_/ /_/ 
+/_____/\____/  /_/ |_|\___/\___/\____/_/ /_/
                     made with <3 by @jesgvn
 ```
 
-# DO Recon
+# Do Recon
 
-Automated recon script that spins up a DigitalOcean VPS and sets the `user-data` option to a recon script for a specific domain(s). Initializing script (`vps-init.sh`) installs popular recon tools and runs a basic recon assessment with subfinder, Amass and nuclei. Supports notification on completion by Telegram.
+Automated recon script that spins up a DigitalOcean VPS and sets the `user-data` option to a recon script for a specific domain(s). Initializing script (`vps-init.sh`) installs popular recon tools and runs a basic recon assessment with subfinder, Amass and nuclei. Supports notification on completion by Telegram. Default is to not run recon commands, you can enable by passing `-r` flag as shown below.
 
 ### Usage:
 
 ```sh
-TELEGRAM_BOT_ID=123 TELEGRAM_CHAT_ID=asdf ./dorecon.sh domain1.com domain2.com domain3.com
+TELEGRAM_BOT_ID=123 TELEGRAM_CHAT_ID=asdf ./dorecon -r domain1.com domain2.com
 ```
 
 ### Tools installed:
@@ -29,7 +29,7 @@ TELEGRAM_BOT_ID=123 TELEGRAM_CHAT_ID=asdf ./dorecon.sh domain1.com domain2.com d
 
 ### Requirements:
 
-* [DigitalOcean](https://m.do.co/c/b3ccbe8742ef) account (referral link) 
+* [DigitalOcean](https://m.do.co/c/b3ccbe8742ef) account (referral link)
 * Create and attach an [SSH key](https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/) to your account (in order to connect to VPS later)
 * Create an [API token](https://www.digitalocean.com/docs/apis-clis/doctl/how-to/install/#step-2-create-an-api-token)
 * Install and configure [doctl](https://github.com/digitalocean/doctl) using the created API token
@@ -37,6 +37,12 @@ TELEGRAM_BOT_ID=123 TELEGRAM_CHAT_ID=asdf ./dorecon.sh domain1.com domain2.com d
 * Optional: Telegram message sent upon recon completion
 
 ### Configuration:
+
+**Flags:**
+
+| Flag | Description | Example |
+|------|-------------|---------|
+| -r   | Run recon commands | ./dorecon -r domain1.com |
 
 **Environment variables:**
 
@@ -52,7 +58,7 @@ TELEGRAM_BOT_ID=123 TELEGRAM_CHAT_ID=asdf ./dorecon.sh domain1.com domain2.com d
 The initial recon consists of:
 
 * Running subfinder and Amass on target domain
-* Piping found domains to httpx and later to nuclei 
+* Piping found domains to httpx and later to nuclei
 
 ### Reports:
 

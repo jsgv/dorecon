@@ -1,33 +1,46 @@
-function banner () {
-    cat <<'EOF'
-    ____           ____                      
-   / __ \____     / __ \___  _________  ____ 
+#!/bin/bash
+
+set -e;
+
+cat <<'EOF'
+    ____           ____
+   / __ \____     / __ \___  _________  ____
   / / / / __ \   / /_/ / _ \/ ___/ __ \/ __ \
  / /_/ / /_/ /  / _, _/  __/ /__/ /_/ / / / /
-/_____/\____/  /_/ |_|\___/\___/\____/_/ /_/ 
+/_____/\____/  /_/ |_|\___/\___/\____/_/ /_/
                     made with <3 by @jesgvn
 EOF
-}
 
-banner;
+REGION=${REGION:-sfo2};
+SIZE=${SIZE:-s-1vcpu-2gb};
+DOMAINS="";
+INIT_SCRIPT=$(cat vps-init.sh);
 
-REGION=${REGION:-sfo2}
-SIZE=${SIZE:-s-1vcpu-2gb}
+while getopts ":r" opt; do
+    case ${opt} in
+        r )
+            INIT_SCRIPT=$(echo "$INIT_SCRIPT" | sed -e "s/DORECON=0/DORECON=1/");
+            ;;
+        \? )
+            echo ; echo "Error - option not supported: [$OPTARG]";
+            exit 1;
+            ;;
+    esac
+done
 
-DOMAINS=""
+# remove flags
+shift $((OPTIND -1));
 
 for d in "$@"
 do
     DOMAINS+="\"$d\" ";
 done
 
-INIT_SCRIPT=$(cat vps-init.sh);
-
 # remove trailing space after last domain
 DOMAINS=`echo $DOMAINS | sed -e "s/ $//"`
 
 # replace domain placeholder
-INIT_SCRIPT=$(echo "$INIT_SCRIPT" | sed -e "s/DOMAINSPLACEHOLDER/$DOMAINS/");
+INIT_SCRIPT=$(echo "$INIT_SCRIPT" | sed -e "s/PLACEHOLDER_DOMAINS/$DOMAINS/");
 
 # if Telegram variables are defined, add the API call to the end of the script
 if [[ $TELEGRAM_BOT_ID && $TELEGRAM_CHAT_ID ]]
@@ -42,5 +55,5 @@ doctl compute droplet create \
     --region $REGION \
     --user-data "$INIT_SCRIPT" \
     --wait \
-    "recon"; 
+    "recon";
 
