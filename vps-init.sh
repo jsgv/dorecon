@@ -5,7 +5,7 @@ DORECON=0;
 
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S");
 REPORTS_FOLDER="/root/recon/reports/$TIMESTAMP";
-GOLANG_DL="go1.14.6.linux-amd64.tar.gz";
+GOLANG_DL="go1.15.linux-amd64.tar.gz";
 
 export GO111MODULE=on;
 export GOROOT=/usr/local/go;
