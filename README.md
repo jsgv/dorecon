@@ -17,7 +17,7 @@ Automated recon script that spins up a DigitalOcean VPS and sets the `user-data`
 TELEGRAM_BOT_ID=123 TELEGRAM_CHAT_ID=asdf ./dorecon -r domain1.com domain2.com
 ```
 
-### Tools installed:
+### Go tools installed:
 
 * [Amass](https://github.com/OWASP/Amass)
 * [subfinder](https://github.com/projectdiscovery/subfinder)
@@ -26,6 +26,10 @@ TELEGRAM_BOT_ID=123 TELEGRAM_CHAT_ID=asdf ./dorecon -r domain1.com domain2.com
 * [httprobe](https://github.com/tomnomnom/httprobe)
 * [ffuf](https://github.com/ffuf/ffuf)
 * [hakrawler](https://github.com/hakluke/hakrawler)
+
+### Python tools installed (with flag)
+
+* [dirsearch](https://github.com/maurosoria/dirsearch)
 
 ### Requirements:
 
@@ -43,6 +47,7 @@ TELEGRAM_BOT_ID=123 TELEGRAM_CHAT_ID=asdf ./dorecon -r domain1.com domain2.com
 | Flag | Description | Example |
 |------|-------------|---------|
 | -r   | Run recon commands | ./dorecon -r domain1.com |
+| -p   | Install python tools | ./dorecon -p |
 
 **Environment variables:**
 

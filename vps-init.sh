@@ -2,6 +2,7 @@
 
 DOMAINS=(PLACEHOLDER_DOMAINS);
 DORECON=0;
+INSTALL_PYTHON_TOOLS=0;
 
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S");
 REPORTS_FOLDER="/root/recon/reports/$TIMESTAMP";
@@ -31,6 +32,7 @@ tar -C /usr/local/ -xzf $GOLANG_DL;
 rm $GOLANG_DL;
 
 # install tools
+go get -u github.com/tomnomnom/assetfinder;
 go get -u -v github.com/tomnomnom/httprobe;
 go get -u -v github.com/projectdiscovery/httpx/cmd/httpx;
 go get -u -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei;
@@ -42,33 +44,39 @@ go get -v github.com/hakluke/hakrawler;
 # nuclei install templates
 nuclei -update-templates;
 
-mkdir -p $REPORTS_FOLDER;
+if [[ "$INSTALL_PYTHON_TOOLS" -eq 1 ]];
+then
+    mkdir -p "/root/recon/tools";
 
-for domain in "${DOMAINS[@]}"
-do
-    OUT_FOLDER="$REPORTS_FOLDER/$domain"
-    mkdir -p "$OUT_FOLDER";
+    git clone https://github.com/maurosoria/dirsearch.git /root/recon/tools/dirsearch;
+fi
 
-    if [[ "$DORECON" -eq 1 ]];
-    then
-        subfinder -d $domain -o "$OUT_FOLDER/subfinder.txt";
-        sort -u -o "$OUT_FOLDER/subfinder.txt" "$OUT_FOLDER/subfinder.txt"
+if [[ "$DORECON" -eq 1 ]];
+then
+    mkdir -p $REPORTS_FOLDER;
 
-        amass enum -brute -d $domain -o "$OUT_FOLDER/amass.txt";
-        sort -u -o "$OUT_FOLDER/amass.txt" "$OUT_FOLDER/amass.txt"
+    for domain in "${DOMAINS[@]}"
+    do
+        OUT_FOLDER="$REPORTS_FOLDER/$domain"
+        mkdir -p "$OUT_FOLDER";
 
-        cat "$OUT_FOLDER/subfinder.txt" \
-                "$OUT_FOLDER/amass.txt" | \
-            sort -u | \
-            httpx -silent | \
-            nuclei -silent \
-                -c 100 -retries 3 -pbar \
-                -o "$OUT_FOLDER/nuclei.txt" \
-                -t basic-detections/ -t cves/ -t dns/ -t files/ -t panels/ \
-                -t security-misconfiguration -t subdomain-takeover \
-                -t technologies/ -t tokens/ -t vulnerabilities/ -t workflows/ ;
-    fi
-done
+            subfinder -d $domain -o "$OUT_FOLDER/subfinder.txt";
+            sort -u -o "$OUT_FOLDER/subfinder.txt" "$OUT_FOLDER/subfinder.txt"
+
+            amass enum -brute -d $domain -o "$OUT_FOLDER/amass.txt";
+            sort -u -o "$OUT_FOLDER/amass.txt" "$OUT_FOLDER/amass.txt"
+
+            cat "$OUT_FOLDER/subfinder.txt" "$OUT_FOLDER/amass.txt" | \
+                sort -u | \
+                httpx -silent | \
+                nuclei \
+                    -silent -c 100 -retries 3 -json \
+                    -o "$OUT_FOLDER/nuclei.txt" \
+                    -t cves/ -t dns/ -t files/ -t generic-detections -t panels/ \
+                    -t security-misconfiguration -t subdomain-takeover \
+                    -t technologies/ -t tokens/ -t vulnerabilities/ ;
+    done
+fi
 
 echo "All done!";
 

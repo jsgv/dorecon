@@ -16,10 +16,13 @@ SIZE=${SIZE:-s-1vcpu-2gb};
 DOMAINS="";
 INIT_SCRIPT=$(cat vps-init.sh);
 
-while getopts ":r" opt; do
+while getopts ":rp" opt; do
     case ${opt} in
         r )
             INIT_SCRIPT=$(echo "$INIT_SCRIPT" | sed -e "s/DORECON=0/DORECON=1/");
+            ;;
+        p ) # install python tools
+            INIT_SCRIPT=$(echo "$INIT_SCRIPT" | sed -e "s/INSTALL_PYTHON_TOOLS=0/INSTALL_PYTHON_TOOLS=1/");
             ;;
         \? )
             echo ; echo "Error - option not supported: [$OPTARG]";
